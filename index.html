@@ -6,10 +6,9 @@
 <title>Monopoly Digital Twin</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<script async src="https://docs.opencv.org/4.10.0/opencv.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/opencv.js@1.2.1/opencv.js"></script>
 
 <style>
-
 body{
 background:#111;
 color:white;
@@ -54,7 +53,7 @@ margin:10px;
 #logs{
 width:95vw;
 max-width:480px;
-height:120px;
+height:140px;
 background:black;
 color:#00ff9c;
 overflow-y:auto;
@@ -63,7 +62,6 @@ padding:8px;
 border:1px solid #333;
 text-align:left;
 }
-
 </style>
 </head>
 
@@ -97,8 +95,26 @@ logs.innerHTML+=msg+"<br>";
 logs.scrollTop=logs.scrollHeight;
 }
 
-let streaming=false;
 let cap,frame,gray,warped,hsv,mask,contours,hierarchy;
+let dictionary,parameters,corners,ids;
+
+function onOpenCvReady(){
+log("OpenCV loaded successfully");
+startBtn.disabled=false;
+startBtn.innerText="Start Camera";
+}
+
+if(typeof cv !== "undefined"){
+if(cv.getBuildInformation){
+onOpenCvReady();
+}else{
+cv['onRuntimeInitialized']=onOpenCvReady;
+}
+}else{
+log("Waiting for OpenCV...");
+}
+
+startBtn.onclick=startCamera;
 
 function startCamera(){
 
@@ -112,14 +128,14 @@ height:{ideal:720}
 },
 audio:false
 })
-.then(function(stream){
+.then(stream=>{
 
 video.srcObject=stream;
 video.play();
 
-video.onloadedmetadata=function(){
+video.onloadedmetadata=()=>{
 
-log("Camera ready");
+log("Camera metadata loaded");
 
 startVision();
 
@@ -132,7 +148,7 @@ startVision();
 
 function startVision(){
 
-log("Starting vision pipeline");
+log("Initializing vision pipeline");
 
 cap=new cv.VideoCapture(video);
 
@@ -259,17 +275,6 @@ log("Vision error: "+e);
 requestAnimationFrame(process);
 
 }
-
-cv["onRuntimeInitialized"]=()=>{
-
-log("OpenCV loaded");
-
-startBtn.disabled=false;
-startBtn.innerText="Start Camera";
-
-};
-
-startBtn.onclick=startCamera;
 
 </script>
 
