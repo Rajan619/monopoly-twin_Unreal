@@ -9,8 +9,11 @@ let log = document.getElementById("log");
 let previousGray = null;
 let visionReady = false;
 
-const BOARD_SIZE = 1000;
+const BOARD_SIZE = 800;
 const FRAME_DELAY = 120;
+
+let dictionary;
+let parameters;
 
 function logMsg(msg){
 console.log(msg);
@@ -20,16 +23,18 @@ log.innerText = msg + "\n" + log.innerText;
 function initOpenCV(){
 
 if(typeof cv === "undefined"){
-logMsg("Waiting for OpenCV script...");
+logMsg("Waiting for OpenCV...");
 setTimeout(initOpenCV,200);
 return;
 }
 
-logMsg("OpenCV detected, waiting runtime");
-
 cv.onRuntimeInitialized = () => {
 
+dictionary = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_4X4_50);
+parameters = new cv.aruco.DetectorParameters();
+
 visionReady = true;
+
 status.innerText="OpenCV Ready";
 
 logMsg("OpenCV runtime initialized");
@@ -115,9 +120,6 @@ function detectBoard(src){
 
 try{
 
-let dictionary = new cv.aruco_Dictionary(cv.DICT_4X4_50);
-let parameters = new cv.aruco_DetectorParameters();
-
 let markerCorners = new cv.MatVector();
 let markerIds = new cv.Mat();
 
@@ -153,9 +155,9 @@ logMsg("Marker "+id+" "+x+","+y);
 markerCorners.delete();
 markerIds.delete();
 
-if(boardCorners[0]&&boardCorners[1]&&boardCorners[2]&&boardCorners[3]){
+if(boardCorners[0] && boardCorners[1] && boardCorners[2] && boardCorners[3]){
 
-logMsg("All four markers visible");
+logMsg("All markers visible");
 
 let srcTri = cv.matFromArray(4,1,cv.CV_32FC2,[
 
