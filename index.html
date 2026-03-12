@@ -7,8 +7,6 @@
 
 <link rel="stylesheet" href="style.css">
 
-<script src="https://docs.opencv.org/4.x/opencv.js"></script>
-
 </head>
 
 <body>
@@ -22,13 +20,23 @@
 <div class="container">
 
 <video id="video" autoplay playsinline></video>
-
 <canvas id="canvas"></canvas>
 
 </div>
 
 <div id="log"></div>
 
+<script>
+var Module = {
+    onRuntimeInitialized() {
+        window.cvReady = true;
+        document.getElementById("status").innerText = "OpenCV Ready";
+        console.log("OpenCV runtime initialized");
+    }
+};
+</script>
+
+<script src="https://docs.opencv.org/4.x/opencv.js"></script>
 <script src="script.js"></script>
 
 </body>
